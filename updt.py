@@ -6,7 +6,7 @@ import argparse
 
 def pip():
 	# update and setuptools first
-	print 'pip update pip and setuptools'
+	print 'update pip and setuptools'
 	ans = commands.getoutput('pip install -U pip setuptools')
 	if ans: print ans
 	
