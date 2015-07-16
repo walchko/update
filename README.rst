@@ -25,6 +25,8 @@ A simple tool for admins to keep various command line tools updated. It currentl
 Install
 --------
 
+Not on pypi yet ...
+
 The preferred way is to use `pypi.org <https://pypi.python.org/pypi>`_ ::
 
     pip install updt
@@ -41,15 +43,16 @@ If you plan on doing some development, instead of `install` you can do `develop`
 Usage
 ------
 
-To run::
+::
 
-	updt
+	[kevin@Tardis updt]$ updt -h
+	usage: A simple automation tool to update your system. [-h] [-k] [-p] [-t]
 
-args:
-
--h, --help        help
--p, --no_pip      do not update pip
--t, --no_tools    do not update system tools
+	optional arguments:
+	  -h, --help      show this help message and exit
+	  -k, --kernel    update linux kernel, default is not too
+	  -p, --no_pip    do not update pip
+	  -t, --no_tools  do not update system tools
 
 The default is to update everything, but switches allow you to select what gets updated.
 
