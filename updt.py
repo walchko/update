@@ -1,16 +1,44 @@
 #!/usr/bin/env python
 
-import commands
-import sys
-import argparse
-import time
+import commands # execute tools
+import sys      # get os
+import argparse # command line
+import time     # sleep
+import os       # check for root/sudo
+
+def outdated(pkg):
+	"""
+	Sometimes the list commands returns Warnings, so you need to account for that.
+	[kevin@Tardis updt]$ pip list | grep pip
+	pip (7.1.0)
+	"""
+	ans = commands.getoutput('pip show %s | grep ^Version:'%pkg)
+	pip_curr = ans.split()[1]
+	
+	ans = commands.getoutput('pip list | grep %s'%pkg)
+	a=ans.split('\n')
+	sys_curr = ''
+	for i in a:
+		b = i.split()
+		if b[0] == pkg:
+			sys_curr = b[1].replace('(','').replace(')','')
+			break
+	
+	#print pip_curr,sys_curr,pip_curr==sys_curr
+	
+	if pip_curr==sys_curr: return False
+	else: return True
 
 def pip():
 	print '-[pip]----------'
 	# update and setuptools first
+	pkgs = ['pip','setuptools']
 	print 'update pip and setuptools'
-	ans = commands.getoutput('pip install -U pip setuptools')
-	if ans: print ans
+	for p in pkgs:
+		if outdated(p):
+			ans = commands.getoutput('pip install -U %s'%(p))
+			if ans: print ans
+		else: print p,'is already up to date'
 	
 	# find outdated packages
 	p = commands.getoutput('pip list --outdated').split('\n')
@@ -84,10 +112,14 @@ def getArgs():
 	return args
 
 def main():
+# 	checkVersion('pip')
+# 	checkVersion('setuptools')
+# 	exit()
+	
 	# get command line
 	args = getArgs()
 	
-	
+	system = sys.platform
 	if system == 'darwin': 
 		if not args['no_pip']: pip()
 		if not args['no_tools']: brew()
