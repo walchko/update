@@ -107,7 +107,6 @@ Changes
 =============  ========  ======
 Date           Version   Notes
 =============  ========  ======
-23 Jul 16      0.3.3     error fix
-23 Jul 16      0.2.0     refactoring
+23 Jul 16      0.4.0     rename
 11 Jul 15      0.1.0     created
 =============  ========  ======

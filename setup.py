@@ -9,7 +9,7 @@ def read(fname):
 
 setup(
     name="update",
-    version="0.3.4",
+    version="0.4",
     author="Kevin Walchko",
     keywords=['pip', 'apt-get', 'update', 'brew', 'homebrew', 'automate'],
     author_email="kevin.walchko@outlook.com",
