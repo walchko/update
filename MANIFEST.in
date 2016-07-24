@@ -5,10 +5,9 @@
 include LICENSE
 include README.rst
 include MANIFEST.in
-include updt.py
 
 # Main
-# recursive-include *.py
-recursive-exclude * .gitignore
-recursive-exclude * .travis.yml
-recursive-exclude * .DS_Store
+recursive-include update *.py
+# recursive-exclude * .gitignore
+# recursive-exclude * .travis.yml
+# recursive-exclude * .DS_Store

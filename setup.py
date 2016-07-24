@@ -8,8 +8,8 @@ def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 setup(
-    name="updt",
-    version="0.3.0",
+    name="update",
+    version="0.3.4",
     author="Kevin Walchko",
     keywords=['pip', 'apt-get', 'update', 'brew', 'homebrew', 'automate'],
     author_email="kevin.walchko@outlook.com",
@@ -45,14 +45,14 @@ setup(
         'Topic :: System :: Shells',
         'Environment :: Console'
     ],
-    install_requires=['psutil'],
+    # install_requires=['psutil'],
     url="https://github.com/walchko/updt",
     long_description=read("README.rst"),
     # description-file = 'README.md',
     # packages=["updt"],
     entry_points={
         'console_scripts': [
-            'updt=updt:main',
+            'update=update.update:main',
         ],
     },
 )

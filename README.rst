@@ -1,17 +1,17 @@
 ===============
-Updt (Update)
+Update
 ===============
 
 .. image:: https://travis-ci.org/walchko/updt.svg?branch=master
     :target: https://travis-ci.org/walchko/updt
-.. image:: https://img.shields.io/pypi/v/updt.svg
-    :target: https://pypi.python.org/pypi/updt/
+.. image:: https://img.shields.io/pypi/v/update.svg
+    :target: https://pypi.python.org/pypi/update/
     :alt: Latest Version
-.. image:: https://img.shields.io/pypi/dm/updt.svg
-    :target: https://pypi.python.org/pypi/updt/
+.. image:: https://img.shields.io/pypi/dm/update.svg
+    :target: https://pypi.python.org/pypi/update/
     :alt: Downloads
-.. image:: https://img.shields.io/pypi/l/updt.svg
-    :target: https://pypi.python.org/pypi/updt/
+.. image:: https://img.shields.io/pypi/l/update.svg
+    :target: https://pypi.python.org/pypi/update/
     :alt: License
 
 A simple tool for admins to keep various command line tools updated. It currently supports:
@@ -29,12 +29,12 @@ Install
 
 The preferred way is to use `pypi.org <https://pypi.python.org/pypi>`_ ::
 
-	pip install updt
+	pip install update
 
 You can also do::
 
-	git clone https://github.com/walchko/updt.git
-	cd updt
+	git clone https://github.com/walchko/update.git
+	cd update
 	python setup.py install
 
 If you plan on doing some development, instead of `install` you can do `develop`.
@@ -45,7 +45,7 @@ Usage
 
 ::
 
-	[kevin@Tardis updt]$ updt -h
+	[kevin@Tardis ~]$ update -h
 	usage: A simple automation tool to update your system. [-h] [-k]
 
 	optional arguments:
@@ -56,7 +56,7 @@ The default is everything gets updated except the linux kernel.
 
 ::
 
-	kevin@Tardis tmp $ updt.py
+	kevin@Tardis tmp $ update
 	OS: macOS
 	Executing NOT as root
 	-[pip]----------
@@ -90,14 +90,24 @@ The default is everything gets updated except the linux kernel.
 	  >> Found 1 packages
 	  [>] npm update -g  npm
 
+--------------
+Development
+--------------
+
+::
+
+	python setup.py develop
+	python setup.py sdist
+	twine upload dist/*
 
 --------
 Changes
 --------
+
 =============  ========  ======
 Date           Version   Notes
 =============  ========  ======
-23 Jul 16      0.3.0     error fix
+23 Jul 16      0.3.3     error fix
 23 Jul 16      0.2.0     refactoring
 11 Jul 15      0.1.0     created
 =============  ========  ======
