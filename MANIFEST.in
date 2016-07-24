@@ -2,12 +2,13 @@
 #
 # This tells distutils what files to distribute.
 
-include License.txt
+include LICENSE
 include README.rst
 include MANIFEST.in
+include updt.py
 
 # Main
-recursive-include *.py
+# recursive-include *.py
 recursive-exclude * .gitignore
 recursive-exclude * .travis.yml
 recursive-exclude * .DS_Store

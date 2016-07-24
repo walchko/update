@@ -1,14 +1,17 @@
+#!/usr/bin/env python
+
 import os
 from setuptools import setup
+
 
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 setup(
     name="updt",
-    version="0.1.0",
+    version="0.2.0",
     author="Kevin Walchko",
-    keywords=['pip','apt-get','update'],
+    keywords=['pip', 'apt-get', 'update', 'brew', 'homebrew', 'automate'],
     author_email="kevin.walchko@outlook.com",
     description="A simple python script to update various tools via the command line.",
     license="MIT",
@@ -25,12 +28,12 @@ setup(
         # Specify the Python versions you support here. In particular, ensure
         # that you indicate whether you support Python 2, Python 3 or both.
         # 'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.6',
+        # 'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
-        #'Programming Language :: Python :: 3',
-        #'Programming Language :: Python :: 3.2',
-        #'Programming Language :: Python :: 3.3',
-        #'Programming Language :: Python :: 3.4',
+        # 'Programming Language :: Python :: 3',
+        # 'Programming Language :: Python :: 3.2',
+        # 'Programming Language :: Python :: 3.3',
+        # 'Programming Language :: Python :: 3.4',
 
         # Operating systems this runs on
         'Operating System :: Unix',
@@ -45,8 +48,8 @@ setup(
     install_requires=['psutil'],
     url="https://github.com/walchko/updt",
     long_description=read("README.rst"),
-    #description-file = 'README.md',
-    #packages=["updt"],
+    # description-file = 'README.md',
+    # packages=["updt"],
     entry_points={
         'console_scripts': [
             'updt=updt:main',

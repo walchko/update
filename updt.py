@@ -1,138 +1,192 @@
 #!/usr/bin/env python
 
-import commands # execute tools
-import sys      # get os
-import argparse # command line
-import time     # sleep
-import os       # check for root/sudo
+from __future__ import print_function
+import commands  # execute tools
+import sys       # get os
+import argparse  # command line
+import time      # sleep
+import os        # check for root/sudo
 
-def outdated(pkg):
+gRun = False
+
+
+def isRoot():
 	"""
-	Sometimes the list commands returns Warnings, so you need to account for that.
-	[kevin@Tardis updt]$ pip list | grep pip
-	pip (7.1.0)
+	Am I root/sudo?
+	out: True/False
 	"""
-	ans = commands.getoutput('pip show %s | grep ^Version:'%pkg)
-	pip_curr = ans.split()[1]
-	
-	ans = commands.getoutput('pip list | grep %s'%pkg)
-	a=ans.split('\n')
-	sys_curr = ''
-	for i in a:
-		b = i.split()
-		if b[0] == pkg:
-			sys_curr = b[1].replace('(','').replace(')','')
-			break
-	
-	#print pip_curr,sys_curr,pip_curr==sys_curr
-	
-	if pip_curr==sys_curr: return False
+	if os.geteuid() != 0: return False
 	else: return True
 
-def pip():
-	print '-[pip]----------'
-	# update and setuptools first
-	pkgs = ['pip','setuptools']
-	print 'update pip and setuptools'
-	for p in pkgs:
-		if outdated(p):
-			ans = commands.getoutput('pip install -U %s'%(p))
-			if ans: print ans
-		else: print p,'is already up to date'
-	
-	# find outdated packages
-	p = commands.getoutput('pip list --outdated').split('\n')
+
+def cmd(str, print_ret=False, usr_pwd=None, run=True):
+	"""
+	Executes a command and throws an exception on error.
+	in:
+		str - command
+		print_ret - print command return
+		usr_pwd - execute command as another user (user_name, password)
+		run - really execute command?
+	out:
+		returns the command output
+	"""
+	if usr_pwd:
+		str = 'echo {} | sudo -u {} {} '.format(usr_pwd[0], usr_pwd[1], str)
+
+	print('  [>] {}'.format(str))
+
+	if run:
+		err, ret = commands.getstatusoutput(str)
+	else:
+		err = None
+		ret = None
+
+	if err:
+		print('  [x] {}'.format(ret))
+		raise Exception(ret)
+	if ret and print_ret:
+		lines = ret.split('\n')
+		for line in lines:
+			print('  [<] {}'.format(line))
+	return ret
+
+
+def getPackages(plist):
+	"""
+	Cleans up input from the command line tool and returns a list of package
+	names
+	"""
+	nlist = plist.split('\n')
 	pkgs = []
-	for i in p:
+	for i in nlist:
 		if i.find('===') > 0: continue
-		
 		pkg = i.split()[0]
-		# print pkg
 		if pkg   == 'Warning:': continue
 		elif pkg == 'Could': continue
 		elif pkg == 'Some': continue
 		elif pkg == 'You': continue
+		elif not pkg: continue
 		pkgs.append(pkg)
-	
-	if not pkgs:
-		print 'Nothing to update'
-		return
-		
-	# update packages
-	print 'Found',len(pkgs),'packages:',' '.join( pkgs )
-	time.sleep(5)
-	for p in pkgs:
-		print 'Updating:',p
-		ans = commands.getoutput('pip install -U %s'%(p))
-		if ans: print ans
 
-def brew():
-	print '-[brew]----------'
-	print 'brew update'
-	ans = commands.getoutput('brew update')
-	if ans: print ans
-	print 'brew upgrade packages'
-	ans = commands.getoutput('brew upgrade')
-	if ans: print ans
-	
-	print 'brew prune old sym links'
-	ans = commands.getoutput('brew prune')
-	if ans: print ans
-	print 'brew cleanup old packages'
-	ans = commands.getoutput('brew cleanup')
-	if ans: print ans
+	print('  >> Found', len(pkgs), 'packages')
+
+	return pkgs
+
+
+def pip(usr_pswd=None):
+	"""
+	This updates one package at a time.
+
+	Could do all at once:
+		pip list --outdated | cut -d' ' -f1 | xargs pip install --upgrade
+	"""
+	print('-[pip]----------')
+	p = cmd('pip list --outdated')
+	pkgs = getPackages(p)
+
+	# update pip and setuptools first
+	for i, p in enumerate(pkgs):
+		if p in ['pip', 'setuptools']:
+			cmd('pip install -U ' + p, usr_pwd=usr_pswd, run=gRun)
+			pkgs.pop(i)
+
+	# update the rest of them
+	for p in pkgs:
+		cmd('pip install -U ' + p, usr_pwd=usr_pswd, run=gRun)
+
+
+def brew(clean=False):
+	print('-[brew]----------')
+	# cmd('brew --version')
+	# print(' > brew updating')
+	cmd('brew update')
+	# print('brew upgrade packages')
+	p = cmd('brew outdated')
+	pkgs = getPackages(p)
+	for p in pkgs:
+		cmd('brew upgrade {}'.format(p), run=gRun)
+
+	if clean:
+		print(' > brew prune old sym links and cleanup')
+		cmd('brew prune')
+		cmd('brew cleanup')
+
 
 def kernel():
-	print '-[kernel]----------'
-	ans=commands.getoutput('uname -a')
-	arm = ans.find('arm')
-	
-	# this is not an ARM linux computer ... can't do this
-	if arm == -1: 
-		print 'Not an ARM computer (RPi) ... cannot update kernel'
-		return
-	
-	commands.getoutput('apt-get upgrade rpi-update')
-	commands.getoutput('rpi-update')	
+	print('================================')
+	print('  WARNING: upgrading the kernel')
+	print('================================')
+	time.sleep(5)
 
-def aptget():
-	print '-[apt-get]----------'
-	ans=commands.getoutput('apt-get update')
-	if ans: print ans
-	ans=commands.getoutput('apt-get upgrade')
-	if ans: print ans
+	print('-[kernel]----------')
+	cmd('rpi-update', True)
+	print(' >> You MUST reboot to load the new kernel <<')
+
+
+def aptget(clean=False):
+	print('-[apt-get]----------')
+	cmd('apt-get update')
+	cmd('apt-get upgrade')
+	if clean:
+		cmd('apt-get autoremove')
+
+
+def npm(usr_pwd=None):
+	print('-[npm]----------')
+	# awk, ignore 1st line and grab 1st word
+	p = cmd("npm outdated -g | awk 'NR>1 {print $1}'")
+	pkgs = getPackages(p)
+
+	# if usr_pswd is None: str = 'npm update -g '
+	# else: str = 'echo {} | sudo -u {} npm update -g '.format(usr_pswd[0], usr_pswd[1])
+
+	for p in pkgs:
+		cmd('{} {}'.format('npm update -g ', p), usr_pwd=usr_pwd, run=gRun)
+
 
 def getArgs():
 	parser = argparse.ArgumentParser('A simple automation tool to update your system.')
 	parser.add_argument('-k', '--kernel', help='update linux kernel, default is not too', action='store_true')
-	parser.add_argument('-p', '--no_pip', help='do not update pip', action='store_true')
-	parser.add_argument('-t', '--no_tools', help='do not update system tools', action='store_true')
+	# parser.add_argument('-p', '--no_pip', help='do not update pip', action='store_true')
+	# parser.add_argument('-t', '--no_tools', help='do not update system tools', action='store_true')
+	parser.add_argument('-c', '--cleanup', help='cleanup after updates', action='store_true')
 	args = vars(parser.parse_args())
-	
+
 	return args
 
+
 def main():
-# 	checkVersion('pip')
-# 	checkVersion('setuptools')
-# 	exit()
-	
 	# get command line
 	args = getArgs()
-	
+	# print(args)
+
 	system = sys.platform
-	if system == 'darwin': 
-		if not args['no_pip']: pip()
-		if not args['no_tools']: brew()
-		
-	elif system == 'linux' or system == 'linux2': 
-		if os.geteuid() != 0:
-				exit('You need to be root/sudo for linux ... exiting')
-		
-		if not args['no_pip']: pip()
-		if not args['no_tools']: aptget()
+	if system == 'darwin':
+		print('OS: macOS')
+
+		if isRoot(): raise Exception('Do not use root on macOS!')
+		else: print('Executing NOT as root')
+		# if not args['no_pip']: pip()
+		# if not args['no_tools']: brew()
+		pip()
+		brew(args['cleanup'])
+		npm()
+
+	elif system in ['linux', 'linux2']:
+		print('OS: Linux')
+
+		if not isRoot():
+			raise Exception('You need to be root/sudo for linux ... exiting')
+		else: print('Executing AS root')
+
+		pip(('pi', 'raspberry'))
+		aptget(args['cleanup'])
+		npm(('pi', 'raspberry'))
 		if args['kernel']: kernel()
 
-		
-	
+	else:
+		print('Your OS is not supported')
+
+
 if __name__ == "__main__":
-  main()
+	main()
