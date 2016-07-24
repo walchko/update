@@ -7,7 +7,8 @@ import argparse  # command line
 import time      # sleep
 import os        # check for root/sudo
 
-gRun = False
+# testing w/o actually running the update command
+gRun = True
 
 
 def isRoot():
@@ -15,8 +16,12 @@ def isRoot():
 	Am I root/sudo?
 	out: True/False
 	"""
-	if os.geteuid() != 0: return False
-	else: return True
+	if os.geteuid() != 0:
+		print('Root: False')
+		return False
+	else:
+		print('Root: True')
+		return True
 
 
 def cmd(str, print_ret=False, usr_pwd=None, run=True):
@@ -82,6 +87,7 @@ def pip(usr_pswd=None):
 	"""
 	print('-[pip]----------')
 	p = cmd('pip list --outdated')
+	if not p: return
 	pkgs = getPackages(p)
 
 	# update pip and setuptools first
@@ -97,11 +103,9 @@ def pip(usr_pswd=None):
 
 def brew(clean=False):
 	print('-[brew]----------')
-	# cmd('brew --version')
-	# print(' > brew updating')
 	cmd('brew update')
-	# print('brew upgrade packages')
 	p = cmd('brew outdated')
+	if not p: return
 	pkgs = getPackages(p)
 	for p in pkgs:
 		cmd('brew upgrade {}'.format(p), run=gRun)
@@ -131,14 +135,12 @@ def aptget(clean=False):
 		cmd('apt-get autoremove')
 
 
-def npm(usr_pwd=None):
+def npm(usr_pwd=None, clean=False):
 	print('-[npm]----------')
 	# awk, ignore 1st line and grab 1st word
 	p = cmd("npm outdated -g | awk 'NR>1 {print $1}'")
+	if not p: return
 	pkgs = getPackages(p)
-
-	# if usr_pswd is None: str = 'npm update -g '
-	# else: str = 'echo {} | sudo -u {} npm update -g '.format(usr_pswd[0], usr_pswd[1])
 
 	for p in pkgs:
 		cmd('{} {}'.format('npm update -g ', p), usr_pwd=usr_pwd, run=gRun)
@@ -147,8 +149,6 @@ def npm(usr_pwd=None):
 def getArgs():
 	parser = argparse.ArgumentParser('A simple automation tool to update your system.')
 	parser.add_argument('-k', '--kernel', help='update linux kernel, default is not too', action='store_true')
-	# parser.add_argument('-p', '--no_pip', help='do not update pip', action='store_true')
-	# parser.add_argument('-t', '--no_tools', help='do not update system tools', action='store_true')
 	parser.add_argument('-c', '--cleanup', help='cleanup after updates', action='store_true')
 	args = vars(parser.parse_args())
 
@@ -158,16 +158,12 @@ def getArgs():
 def main():
 	# get command line
 	args = getArgs()
-	# print(args)
 
 	system = sys.platform
 	if system == 'darwin':
 		print('OS: macOS')
 
 		if isRoot(): raise Exception('Do not use root on macOS!')
-		else: print('Executing NOT as root')
-		# if not args['no_pip']: pip()
-		# if not args['no_tools']: brew()
 		pip()
 		brew(args['cleanup'])
 		npm()
@@ -177,11 +173,11 @@ def main():
 
 		if not isRoot():
 			raise Exception('You need to be root/sudo for linux ... exiting')
-		else: print('Executing AS root')
 
-		pip(('pi', 'raspberry'))
+		pi = ('pi', 'raspberry')
+		pip(pi)
 		aptget(args['cleanup'])
-		npm(('pi', 'raspberry'))
+		npm(pi)
 		if args['kernel']: kernel()
 
 	else:

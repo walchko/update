@@ -5,3 +5,4 @@ old
 .DS_Store
 .AppleDouble
 updt.egg-info
+dist/
