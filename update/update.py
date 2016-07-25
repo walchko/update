@@ -85,6 +85,11 @@ def pip(usr_pswd=None):
 	Could do all at once:
 		pip list --outdated | cut -d' ' -f1 | xargs pip install --upgrade
 	"""
+	# see if pip is installed
+	try: cmd('which pip')
+	except:
+		return
+
 	print('-[pip]----------')
 	p = cmd('pip list --outdated')
 	if not p: return
@@ -105,6 +110,11 @@ def brew(clean=False):
 	"""
 	Handle homebrew on macOS
 	"""
+	# see if homebrew is installed
+	try: cmd('which brew')
+	except:
+		return
+
 	print('-[brew]----------')
 	cmd('brew update')
 	p = cmd('brew outdated')
@@ -148,6 +158,11 @@ def npm(usr_pwd=None, clean=False):
 	"""
 	Handle npm for Node.js
 	"""
+	# see if node is installed
+	try: cmd('which npm')
+	except:
+		return
+
 	print('-[npm]----------')
 	# awk, ignore 1st line and grab 1st word
 	p = cmd("npm outdated -g | awk 'NR>1 {print $1}'")
@@ -198,3 +213,10 @@ def main():
 
 if __name__ == "__main__":
 	main()
+	# try:
+	# 	ans = cmd('which npm')
+	# 	print(ans)
+	# 	ans = cmd('which abc')
+	# 	print(ans)
+	# except:
+	# 	print('oops')
