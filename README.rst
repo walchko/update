@@ -133,7 +133,7 @@ Changes
 =============  ========  ======
 Date           Version   Notes
 =============  ========  ======
-24 Jul 16      0.4.3     refactor and small bug fixes
+24 Jul 16      0.4.4     refactor and small bug fixes
 23 Jul 16      0.4.2     rename and lots of fixes
 11 Jul 15      0.1.0     created
 =============  ========  ======
