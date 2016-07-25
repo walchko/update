@@ -8,7 +8,7 @@ import time      # sleep
 import os        # check for root/sudo
 
 # testing w/o actually running the update command
-gRun = True
+global_run = True
 
 
 def isRoot():
@@ -93,22 +93,25 @@ def pip(usr_pswd=None):
 	# update pip and setuptools first
 	for i, p in enumerate(pkgs):
 		if p in ['pip', 'setuptools']:
-			cmd('pip install -U ' + p, usr_pwd=usr_pswd, run=gRun)
+			cmd('pip install -U ' + p, usr_pwd=usr_pswd, run=global_run)
 			pkgs.pop(i)
 
 	# update the rest of them
 	for p in pkgs:
-		cmd('pip install -U ' + p, usr_pwd=usr_pswd, run=gRun)
+		cmd('pip install -U ' + p, usr_pwd=usr_pswd, run=global_run)
 
 
 def brew(clean=False):
+	"""
+	Handle homebrew on macOS
+	"""
 	print('-[brew]----------')
 	cmd('brew update')
 	p = cmd('brew outdated')
 	if not p: return
 	pkgs = getPackages(p)
 	for p in pkgs:
-		cmd('brew upgrade {}'.format(p), run=gRun)
+		cmd('brew upgrade {}'.format(p), run=global_run)
 
 	if clean:
 		print(' > brew prune old sym links and cleanup')
@@ -117,6 +120,9 @@ def brew(clean=False):
 
 
 def kernel():
+	"""
+	Handle linux kernel update
+	"""
 	print('================================')
 	print('  WARNING: upgrading the kernel')
 	print('================================')
@@ -128,6 +134,9 @@ def kernel():
 
 
 def aptget(clean=False):
+	"""
+	Handle linux apt-get updates
+	"""
 	print('-[apt-get]----------')
 	cmd('apt-get update')
 	cmd('apt-get upgrade')
@@ -136,6 +145,9 @@ def aptget(clean=False):
 
 
 def npm(usr_pwd=None, clean=False):
+	"""
+	Handle npm for Node.js
+	"""
 	print('-[npm]----------')
 	# awk, ignore 1st line and grab 1st word
 	p = cmd("npm outdated -g | awk 'NR>1 {print $1}'")
@@ -143,7 +155,7 @@ def npm(usr_pwd=None, clean=False):
 	pkgs = getPackages(p)
 
 	for p in pkgs:
-		cmd('{} {}'.format('npm update -g ', p), usr_pwd=usr_pwd, run=gRun)
+		cmd('{} {}'.format('npm update -g ', p), usr_pwd=usr_pwd, run=global_run)
 
 
 def getArgs():

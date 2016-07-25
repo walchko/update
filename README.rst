@@ -90,6 +90,16 @@ The default is everything gets updated except the linux kernel.
 	  >> Found 1 packages
 	  [>] npm update -g  npm
 
+Now generally this works, but sometimes it doesn't so look at the errors and try
+to fix them. For example, ``lxml`` barfs all over the place an crashes this, but
+if you do::
+
+	sudo apt-get install libxml2-dev libxslt-dev python-dev
+
+And then run it, it works because when it now tries to compile ``lxml``, it has all
+of the development files.
+
+
 --------------
 Development
 --------------
@@ -107,6 +117,7 @@ Changes
 =============  ========  ======
 Date           Version   Notes
 =============  ========  ======
-23 Jul 16      0.4.2     rename
+24 Jul 16      0.4.3     refactor and small bug fixes
+23 Jul 16      0.4.2     rename and lots of fixes
 11 Jul 15      0.1.0     created
 =============  ========  ======
