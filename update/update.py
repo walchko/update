@@ -149,7 +149,7 @@ def aptget(clean=False):
 	"""
 	print('-[apt-get]----------')
 	cmd('apt-get update')
-	cmd('apt-get upgrade')
+	cmd('apt-get -y -q upgrade ')
 	if clean:
 		cmd('apt-get autoremove')
 
