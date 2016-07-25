@@ -14,14 +14,15 @@ Update
     :target: https://pypi.python.org/pypi/update/
     :alt: License
 
-A simple tool for admins to keep various command line tools updated. It currently supports:
+A simple tool for admins to keep various command line tools updated. It
+currently supports:
 
 - pip
 - homebrew
 - apt-get
 - rpi-update
 
-Still in development
+For linux updates, it is geared for the Raspberry Pi's Raspbian OS.
 
 --------
 Install
@@ -99,6 +100,21 @@ if you do::
 And then run it, it works because when it now tries to compile ``lxml``, it has all
 of the development files.
 
+~~~~~~
+Linux
+~~~~~~
+
+``update`` needs to get executed with ``sudo`` to upgrade system packages. However,
+for ``pip`` and ``npm`` they will be upgraded using the pi user account. The
+assumption is all of ``/usr/local`` is owned by the user pi.
+
+
+~~~~~~~
+macOS
+~~~~~~~
+
+``update`` doesn't use ``sudo`` and assumes the user has proper privileges to
+update all software.
 
 --------------
 Development
