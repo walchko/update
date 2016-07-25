@@ -9,7 +9,7 @@ def read(fname):
 
 setup(
     name="update",
-    version="0.4",
+    version="0.4.2",
     author="Kevin Walchko",
     keywords=['pip', 'apt-get', 'update', 'brew', 'homebrew', 'automate'],
     author_email="kevin.walchko@outlook.com",
@@ -48,8 +48,7 @@ setup(
     # install_requires=['psutil'],
     url="https://github.com/walchko/updt",
     long_description=read("README.rst"),
-    # description-file = 'README.md',
-    # packages=["updt"],
+    packages=["update"],
     entry_points={
         'console_scripts': [
             'update=update.update:main',

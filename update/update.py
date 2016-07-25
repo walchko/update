@@ -36,7 +36,7 @@ def cmd(str, print_ret=False, usr_pwd=None, run=True):
 		returns the command output
 	"""
 	if usr_pwd:
-		str = 'echo {} | sudo -u {} {} '.format(usr_pwd[0], usr_pwd[1], str)
+		str = 'echo {} | sudo -u {} {} '.format(usr_pwd[1], usr_pwd[0], str)
 
 	print('  [>] {}'.format(str))
 
